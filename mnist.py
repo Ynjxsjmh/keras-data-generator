@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from generator import DataGenerator
+from generator import DataSequence
 
 
 # Network and training parameters
@@ -80,8 +80,8 @@ def fit_sequence():
     x_train, x_validation = x_train[:pivot], x_train[pivot:]
     y_train, y_validation = y_train[:pivot], y_train[pivot:]
 
-    training_generator = DataGenerator(x_train, y_train, CLASSES_NUM, BATCH_SIZE)
-    validation_generator = DataGenerator(x_validation, y_validation, CLASSES_NUM, BATCH_SIZE)
+    training_sequence = DataSequence(x_train, y_train, CLASSES_NUM, BATCH_SIZE)
+    validation_sequence = DataSequence(x_validation, y_validation, CLASSES_NUM, BATCH_SIZE)
 
     # Build the model
     model = tf.keras.models.Sequential()
@@ -107,8 +107,8 @@ def fit_sequence():
     # validation_split
     #   This parameter is not supported when x is a dataset, generator or
     #   keras.utils.Sequence instance.
-    model.fit(training_generator,
-              validation_data=validation_generator,
+    model.fit(training_sequence,
+              validation_data=validation_sequence,
               epochs=EPOCHS,
               verbose=VERBOSE)
 

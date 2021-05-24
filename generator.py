@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 
 
-class DataGenerator(tf.keras.utils.Sequence):
+class DataSequence(tf.keras.utils.Sequence):
     '''Generates data for Keras
     x of `model.fit` could be a generator or keras.utils.Sequence
     returning `(inputs, targets)` or `(inputs, targets, sample_weights)`.
