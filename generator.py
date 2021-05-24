@@ -3,7 +3,15 @@ import tensorflow as tf
 
 
 class DataGenerator(tf.keras.utils.Sequence):
-    'Generates data for Keras'
+    '''Generates data for Keras
+    x of `model.fit` could be a generator or keras.utils.Sequence
+    returning `(inputs, targets)` or `(inputs, targets, sample_weights)`.
+
+    Every Sequence must implement the `__getitem__` and the `__len__` methods.
+    If you want to modify your dataset between epochs you may implement
+    `on_epoch_end`. The method `__getitem__` should return a complete batch.
+    '''
+
     def __init__(self, x, y, classes_num,
                   batch_size=32, shuffle=True):
         'Initialization'
