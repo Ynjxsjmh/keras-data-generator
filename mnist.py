@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+from generator import DataGenerator
 
 
 # Network and training parameters
@@ -72,5 +73,56 @@ def fit_normal():
     predictions = model.predict(x_test)
 
 
+def fit_sequence():
+    (x_train, y_train), (x_test, y_test) = process_dataset()
+
+    pivot = int((1-VALIDATION_SPLIT)*len(y_train))
+    x_train, x_validation = x_train[:pivot], x_train[pivot:]
+    y_train, y_validation = y_train[:pivot], y_train[pivot:]
+
+    training_generator = DataGenerator(x_train, y_train, CLASSES_NUM, BATCH_SIZE)
+    validation_generator = DataGenerator(x_validation, y_validation, CLASSES_NUM, BATCH_SIZE)
+
+    # Build the model
+    model = tf.keras.models.Sequential()
+    model.add(keras.layers.Dense(CLASSES_NUM, input_shape=(RESHAPED,),
+                                 name='dense_layer',
+                                 activation='softmax'))
+
+    # Summary of the model
+    model.summary()
+
+    # Compile the model
+    model.compile(optimizer='SGD',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+
+    # Train the model
+    # y
+    #   If `x` is a dataset, generator, or keras.utils.Sequence instance,
+    #   `y` should not be specified (since targets will be obtained from x).
+    # batch_size
+    #   Do not specify the batch_size if your data is in the form of datasets,
+    #   generators, or keras.utils.Sequence instances (since they generate batches).
+    # validation_split
+    #   This parameter is not supported when x is a dataset, generator or
+    #   keras.utils.Sequence instance.
+    model.fit(training_generator,
+              validation_data=validation_generator,
+              epochs=EPOCHS,
+              verbose=VERBOSE)
+
+    y_test = tf.keras.utils.to_categorical(y_test, CLASSES_NUM)
+
+    # Evaluate the model
+    test_loss, test_acc = model.evaluate(x_test, y_test)
+    print('Test loss:', test_loss)
+    print('Test accuracy:', test_acc)
+
+    # Make prediction
+    predictions = model.predict(x_test)
+
+
 if __name__ == "__main__":
-    fit_normal()
+    #fit_normal()
+    fit_sequence()
