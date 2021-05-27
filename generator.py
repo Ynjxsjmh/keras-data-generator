@@ -44,3 +44,30 @@ class DataSequence(tf.keras.utils.Sequence):
 
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
+
+
+def data_generator(x, y, classes_num, batch_size, shuffle=True):
+    indexes = np.arange(len(x))
+    batches_num = int(np.floor(len(x) / batch_size))
+
+    if shuffle:
+        np.random.shuffle(indexes)
+
+    counter = 0
+
+    while True:
+        idxes = indexes[counter*batch_size:(counter+1)*batch_size]
+
+        batch_x = [x[idx] for idx in idxes]
+        batch_y = [y[idx] for idx in idxes]
+
+        yield np.array(batch_x), tf.keras.utils.to_categorical(batch_y, num_classes=classes_num)
+
+        counter += 1
+
+        # Restart counter to yeild data in the next epoch as well
+        if counter >= batches_num:
+            counter = 0
+
+            if shuffle:
+                np.random.shuffle(indexes)
