@@ -71,3 +71,37 @@ def data_generator(x, y, classes_num, batch_size, shuffle=True):
 
             if shuffle:
                 np.random.shuffle(indexes)
+
+
+class DataGenerator:
+    def __init__(self, x, y, classes_num,
+                  batch_size=32, shuffle=True):
+        'Initialization'
+        self.x = x
+        self.y = y
+
+        self.batch_size = batch_size
+        self.classes_num = classes_num
+        self.shuffle = shuffle
+
+        self.steps = int(np.floor(len(self.x) / self.batch_size))
+
+    def __iter__(self):
+        indexes = np.arange(len(self.x))
+
+        if self.shuffle == True:
+            np.random.shuffle(indexes)
+
+        for start in range(0, len(self.x), self.batch_size):
+            end = min(start + self.batch_size, len(self.x))
+
+            idxes = indexes[start:end]
+
+            batch_x = [self.x[idx] for idx in idxes]
+            batch_y = [self.y[idx] for idx in idxes]
+
+            yield np.array(batch_x), tf.keras.utils.to_categorical(batch_y, num_classes=self.classes_num)
+
+    def data_generator(self):
+        while True:
+             yield from self.__iter__()
